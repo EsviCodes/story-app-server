@@ -63,7 +63,9 @@ router.put("/lobbies/:id", (req, res, next) => {
             .then(() =>
               res
                 .status(200)
-                .send({ message: "Player added succesfully to the lobby" })
+                .send({
+                  message: "Player added succesfully to the writing room"
+                })
             );
         } else {
           res.status(429).send({ message: "This writing room is full" });
