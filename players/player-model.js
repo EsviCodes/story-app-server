@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../db");
+const Lobby = require("../lobby/lobby-model");
 
 const Player = db.define(
   "player",

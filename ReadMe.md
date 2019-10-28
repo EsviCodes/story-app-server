@@ -38,8 +38,12 @@ Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (
 
 
 4. What routes will be handled on the backend
-/login
-/signup
+- /signup
+.. For creating new players
+
+- /login
+.. For logging in with an existing player
+
 /story
 /text
 /place
