@@ -7,7 +7,7 @@ const databaseUrl =
 db = new Sequelize(databaseUrl);
 
 db.sync({ force: false })
-  .then(() => console.log("DB Running"))
+  .then(() => console.log("DataBase is Running"))
   .catch(console.error);
 
 module.exports = db;
