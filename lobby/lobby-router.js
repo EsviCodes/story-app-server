@@ -2,6 +2,7 @@ const { Router } = require("express");
 const Sse = require("json-sse");
 const Lobby = require("./lobby-model");
 const Text = require("../texts/text-model");
+const { toData } = require("../auth/jwt");
 
 const router = new Router();
 const stream = new Sse();
@@ -68,37 +69,14 @@ router
     }
   })
 
-  // Get one Lobby
-  // router
-  //   .get("/lobbies/:id", async (req, res, next) => {
-  //     console.log("get one lobby");
-  //     const lobby = await Lobby.findByPk(req.params.id);
-
-  //     const data = JSON.stringify(lobby);
-  //     res.status(200);
-  //     res.send("Ok");
-
-  //     // Test with http :5000/lobbies/:id --stream
-  //     // stream.updateInit(data);
-  //     // stream.init(req, res);
-  //   })
-
-  // .get("/lobbies/:id", (req, res, next) => {
-  //   Lobby.findByPk(req.params.id, { include: [Text] })
-  //     .then(lobby => {
-  //       res.send(lobby);
-  //     })
-  //     .catch(next);
-  // })
-
   .post("/lobbies", async (req, res) => {
     //console.log("Req Body is", req.body);
-    const { name, title, player, description } = req.body;
+    const { name, title, playerJWT, description } = req.body;
 
     const entity = await Lobby.create({
       name,
       storyTitle: title,
-      player1: player,
+      player1: toData(playerJWT), // DONT SENT TOKEN IN DB
       storyDescription: description,
       status: "waiting"
     });
