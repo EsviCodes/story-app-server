@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const Sse = require("json-sse");
 const Lobby = require("./lobby-model");
+const Text = require("../texts/text-model");
 
 const router = new Router();
 const stream = new Sse();
@@ -96,7 +97,7 @@ router.put("/lobbies/:id", async (req, res, next) => {
     updatedLobby[key] = player;
 
     await lobby.update(updateLobby);
-    const updated = await Lobby.findByPk(req.params.id); // ,{ include: [Text] }
+    const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
     const data = JSON.stringify(updated);
 
     const stream = streams[req.params.id];

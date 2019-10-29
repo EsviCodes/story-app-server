@@ -7,6 +7,7 @@ const authMiddleware = require("./auth/authMiddleware");
 const playerRouter = require("./players/player-router");
 const authRouter = require("./auth/auth-router");
 const lobbyRouter = require("./lobby/lobby-router");
+const textModel = require("./texts/text-model");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ app
   .use(authRouter) // log in
   //.use(authMiddleware)
   .use(lobbyRouter)
+  .use(textModel)
   .get("/", (req, res) => {
     res.status(200);
     res.send("Hello World");
