@@ -16,18 +16,18 @@ async function update() {
   stream.send(data);
 }
 
+// Get all Lobbies
 router.get("/lobbies", async (req, res) => {
   //console.log("Hi from Stream");
   const lobbiesList = await Lobby.findAll();
-
   const data = JSON.stringify(lobbiesList);
-  //console.log("After Stringify - lobbies in Db", data);
 
   // Test with http :5000/lobbies --stream
   stream.updateInit(data);
   stream.init(req, res);
 });
 
+// Stream one specifc lobby
 router.get("/streams/:id", async (req, res) => {
   const stream = streams[req.params.id];
 
@@ -42,20 +42,14 @@ router.get("/streams/:id", async (req, res) => {
 // Get one Lobby
 router
   .get("/lobbies/:id", async (req, res, next) => {
-    const lobbyStream = await Lobby.findByPk(req.params.id);
+    const lobby = await Lobby.findByPk(req.params.id);
 
-    const data = JSON.stringify(lobbyStream);
-    //console.log("After Stringify - lobby in Db", data);
+    const data = JSON.stringify(lobby);
 
     // Test with http :5000/lobbies/:id --stream
     stream.updateInit(data);
     stream.init(req, res);
   })
-  //     .then(lobby => {
-  //       res.send(lobby);
-  //     })
-  //     .catch(next);
-  // })
 
   .post("/lobbies", async (req, res) => {
     //console.log("Req Body is", req.body);
@@ -102,7 +96,7 @@ router.put("/lobbies/:id", async (req, res, next) => {
     updatedLobby[key] = player;
 
     await lobby.update(updateLobby);
-    const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
+    const updated = await Lobby.findByPk(req.params.id); // ,{ include: [Text] }
     const data = JSON.stringify(updated);
 
     const stream = streams[req.params.id];
