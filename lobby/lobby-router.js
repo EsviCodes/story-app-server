@@ -58,8 +58,9 @@ router
 // if player is in that room --> be directed to game straigt away
 // status difference between full and playing or finished
 
-router.put("/lobbies/:id", (req, res, next) => {
-  Lobby.findByPk(req.params.id)
+router.put("/lobbies/:id", async (req, res, next) => {
+  const lobbyStream = await Lobby.findByPk(req.params.id)
+    //Lobby.findByPk(req.params.id)
     .then(lobby => {
       if (lobby) {
         if (lobby.dataValues.player1 === null) {
