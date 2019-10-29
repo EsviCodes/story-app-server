@@ -10,9 +10,7 @@ const stream = new Sse();
 //Dictionary
 const streams = {};
 
-console.log("streams at beginning", streams);
-
-//componentdidmount in app components, so it will always stream
+//console.log("streams at beginning", streams);
 
 async function update() {
   const lobbiesList = await Lobby.findAll();
@@ -51,7 +49,7 @@ router.get("/lobbies", async (req, res) => {
 router
   .get("/lobbies/:id", async (req, res) => {
     try {
-      console.log("REQ-ID", req.params.id);
+      // console.log("REQ-ID", req.params.id);
 
       const stream = getStream(req.params.id);
 
@@ -59,13 +57,13 @@ router
       //console.log("ENTITY", entity);
       const data = JSON.stringify(entity);
 
-      console.log("DATA", data);
-      console.log("STREAM", stream);
+      // console.log("DATA", data);
+      // console.log("STREAM", stream);
 
       stream.updateInit(data);
       stream.init(req, res);
     } catch (error) {
-      console.log("Error in GET ONE LOBBY", error);
+      //console.log("Error in GET ONE LOBBY", error);
     }
   })
 
@@ -92,10 +90,7 @@ router
   });
 
 // Edit Lobby
-
-// see if play 1 / 2 is taken ==> logic in DB in Post request
 // if player is in that room --> be directed to game straigt away
-// status difference between full and playing or finished
 
 router.put("/lobbies/:id", async (req, res, next) => {
   try {
@@ -104,14 +99,16 @@ router.put("/lobbies/:id", async (req, res, next) => {
     if (lobby) {
       const { player1, player2 } = lobby.dataValues;
       const { player } = req.body;
-      const updateLobby = { status: "waiting" };
+      //const updateLobby = { status: "waiting" };
+      const updateLobby = {};
       let key = "player1";
 
-      if (player1 !== null) {
+      //this seat is filled when a new game is created. Doesn't have to be in the logic.
+      if (player1) {
         key = "player2";
         updateLobby = { status: "writing" };
 
-        if (player2 !== null) {
+        if (player2) {
           return res.status(429).send({ message: "This writing room is full" });
         }
       }
@@ -123,7 +120,7 @@ router.put("/lobbies/:id", async (req, res, next) => {
 
       updateStream(updated);
 
-      console.log("streams UPDATE", streams);
+      //console.log("streams UPDATE", streams);
       stream.send(data);
 
       return res
@@ -133,7 +130,7 @@ router.put("/lobbies/:id", async (req, res, next) => {
 
     res.status(429).send({ message: "This writing room does not exist" });
   } catch (error) {
-    console.log("error", error);
+    //console.log("error", error);
   }
 });
 
