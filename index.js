@@ -16,8 +16,7 @@ app
   .use(cors())
   .use(jsonParser)
   .use(playerRouter) // sign up
-  //.use(authRouter) // log in
+  //   .use(authRouter) // log in
+  //   .use(authMiddleware)
   .use(lobbyRouter)
-
-  //.use(authMiddleware)
   .listen(port, () => console.log(`Listening to port ${port}`));

@@ -26,7 +26,8 @@ This app is a multiple player game to create stories together.
 Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (part of sentece with verb).
 - place
 - character
-- part of sentence with verb 
+- verb 
+- noun 
 
 
 2. What reducers will the store have?
@@ -49,6 +50,7 @@ Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (
 /place
 /character
 /verb
+/noun
 
 #### thoughts
 - We can write our own story API or look for an excisting story writing API

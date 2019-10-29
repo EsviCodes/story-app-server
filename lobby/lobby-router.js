@@ -42,9 +42,13 @@ router.put("/lobbies/:id", (req, res, next) => {
     .then(lobby => {
       if (lobby) {
         if (lobby.dataValues.player1 === null) {
-          console.log("lobby", lobby.dataValues.player1);
+          // console.log("lobby", lobby.dataValues.player1);
           console.log(req.body);
-          const updateLobby = { ...req.body, status: "waiting" };
+          const { player } = req.body;
+          console.log(player);
+
+          const updateLobby = { player1: player, status: "waiting" };
+          console.log("update Lobby P1", updateLobby);
 
           lobby
             .update(updateLobby)
@@ -54,19 +58,19 @@ router.put("/lobbies/:id", (req, res, next) => {
                 .send({ message: "Player added succesfully to the lobby" })
             );
         } else if (lobby.dataValues.player2 === null) {
-          console.log("lobby", lobby.dataValues.player2);
-          console.log(req.body);
-          const updateLobby = { ...req.body, status: "writing" };
+          //console.log("lobby", lobby.dataValues.player2);
+          // console.log(req.body);
+          //const updateLobby = { ...req.body, status: "writing" };
+          const { player } = req.body;
 
-          lobby
-            .update(updateLobby)
-            .then(() =>
-              res
-                .status(200)
-                .send({
-                  message: "Player added succesfully to the writing room"
-                })
-            );
+          const updateLobby = { player2: player, status: "waiting" };
+          console.log("update Lobby P2", updateLobby);
+
+          lobby.update(updateLobby).then(() =>
+            res.status(200).send({
+              message: "Player added succesfully to the writing room"
+            })
+          );
         } else {
           res.status(429).send({ message: "This writing room is full" });
         }
