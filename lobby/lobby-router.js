@@ -5,12 +5,34 @@ const Lobby = require("./lobby-model");
 const router = new Router();
 const stream = new Sse();
 
+//Dictionary
+const streams = {};
+
+//componentdidmount in app components, so it will always stream
+
+async function update() {
+  const lobbiesList = await Lobby.findAll();
+  const data = JSON.stringify(lobbiesList);
+  stream.send(data);
+}
+
 router.get("/lobbies", async (req, res) => {
   //console.log("Hi from Stream");
   const lobbiesList = await Lobby.findAll();
 
   const data = JSON.stringify(lobbiesList);
   //console.log("After Stringify - lobbies in Db", data);
+
+  // Test with http :5000/lobbies --stream
+  stream.updateInit(data);
+  stream.init(req, res);
+});
+
+router.get("/streams/:id", async (req, res) => {
+  const stream = streams[req.params.id];
+
+  const entity = Lobby.findByPk(req.params.id);
+  const data = JSON.stringify(entity);
 
   // Test with http :5000/lobbies --stream
   stream.updateInit(data);
@@ -44,9 +66,11 @@ router
     });
 
     // Update the string for the stream
-    const lobbiesList = await Lobby.findAll();
-    const data = JSON.stringify(lobbiesList);
-    stream.send(data);
+    await update();
+
+    const stream = (streams[entity.id] = new Sse());
+    const serialized = JSON.stringify(entity);
+    stream.send(serialized);
 
     res.status(201);
     res.send("Thanks for adding a Lobby");
@@ -59,48 +83,35 @@ router
 // status difference between full and playing or finished
 
 router.put("/lobbies/:id", async (req, res, next) => {
-  const lobbyStream = await Lobby.findByPk(req.params.id)
-    //Lobby.findByPk(req.params.id)
-    .then(lobby => {
-      if (lobby) {
-        if (lobby.dataValues.player1 === null) {
-          // console.log("lobby", lobby.dataValues.player1);
-          // console.log(req.body);
-          const { player } = req.body;
-          //console.log(player);
+  const lobby = await Lobby.findByPk(req.params.id);
 
-          const updateLobby = { player1: player, status: "waiting" };
-          // console.log("update Lobby P1", updateLobby);
+  if (lobby) {
+    const { player1, player2 } = lobby.dataValues;
+    const { player } = req.body;
+    const updateLobby = { status: "waiting" };
+    let key = "player1";
 
-          lobby
-            .update(updateLobby)
-            .then(() =>
-              res
-                .status(200)
-                .send({ message: "Player added succesfully to the lobby" })
-            );
-        } else if (lobby.dataValues.player2 === null) {
-          //console.log("lobby", lobby.dataValues.player2);
-          //console.log(req.body);
-          //const updateLobby = { ...req.body, status: "writing" };
-          const { player } = req.body;
+    if (player1) {
+      key = "player2";
 
-          const updateLobby = { player2: player, status: "waiting" };
-          console.log("update Lobby P2", updateLobby);
-
-          lobby.update(updateLobby).then(() =>
-            res.status(200).send({
-              message: "Player added succesfully to the writing room"
-            })
-          );
-        } else {
-          res.status(429).send({ message: "This writing room is full" });
-        }
-      } else {
-        res.status(404).end();
+      if (player2) {
+        res.status(429).send({ message: "This writing room is full" });
       }
-    })
-    .catch(next);
+    }
+
+    updatedLobby[key] = player;
+
+    await lobby.update(updateLobby);
+    const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
+    const data = JSON.stringify(updated);
+
+    const stream = streams[req.params.id];
+    stream.send(data);
+
+    res.status(200).send({ message: "Player added succesfully to the lobby" });
+  }
+
+  res.status(429).send({ message: "This writing room does not exist" });
 });
 
 // Delete Lobby
