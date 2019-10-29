@@ -19,13 +19,21 @@ router.get("/lobbies", async (req, res) => {
 
 // Get one Lobby
 router
-  .get("/lobbies/:id", (req, res, next) => {
-    Lobby.findByPk(req.params.id)
-      .then(lobby => {
-        res.send(lobby);
-      })
-      .catch(next);
+  .get("/lobbies/:id", async (req, res, next) => {
+    const lobbyStream = await Lobby.findByPk(req.params.id);
+
+    const data = JSON.stringify(lobbyStream);
+    console.log("After Stringify - lobby in Db", data);
+
+    // Test with http :5000/lobbies/:id --stream
+    stream.updateInit(data);
+    stream.init(req, res);
   })
+  //     .then(lobby => {
+  //       res.send(lobby);
+  //     })
+  //     .catch(next);
+  // })
 
   .post("/lobbies", async (req, res) => {
     //console.log("Req Body is", req.body);
