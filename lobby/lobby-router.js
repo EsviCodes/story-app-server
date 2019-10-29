@@ -10,7 +10,7 @@ router.get("/lobbies", async (req, res) => {
   const lobbiesList = await Lobby.findAll();
 
   const data = JSON.stringify(lobbiesList);
-  console.log("After Stringify - lobbies in Db", data);
+  //console.log("After Stringify - lobbies in Db", data);
 
   // Test with http :5000/lobbies --stream
   stream.updateInit(data);
@@ -19,13 +19,21 @@ router.get("/lobbies", async (req, res) => {
 
 // Get one Lobby
 router
-  .get("/lobbies/:id", (req, res, next) => {
-    Lobby.findByPk(req.params.id)
-      .then(lobby => {
-        res.send(lobby);
-      })
-      .catch(next);
+  .get("/lobbies/:id", async (req, res, next) => {
+    const lobbyStream = await Lobby.findByPk(req.params.id);
+
+    const data = JSON.stringify(lobbyStream);
+    //console.log("After Stringify - lobby in Db", data);
+
+    // Test with http :5000/lobbies/:id --stream
+    stream.updateInit(data);
+    stream.init(req, res);
   })
+  //     .then(lobby => {
+  //       res.send(lobby);
+  //     })
+  //     .catch(next);
+  // })
 
   .post("/lobbies", async (req, res) => {
     //console.log("Req Body is", req.body);
@@ -56,12 +64,12 @@ router.put("/lobbies/:id", (req, res, next) => {
       if (lobby) {
         if (lobby.dataValues.player1 === null) {
           // console.log("lobby", lobby.dataValues.player1);
-          console.log(req.body);
+          // console.log(req.body);
           const { player } = req.body;
-          console.log(player);
+          //console.log(player);
 
           const updateLobby = { player1: player, status: "waiting" };
-          console.log("update Lobby P1", updateLobby);
+          // console.log("update Lobby P1", updateLobby);
 
           lobby
             .update(updateLobby)
@@ -72,7 +80,7 @@ router.put("/lobbies/:id", (req, res, next) => {
             );
         } else if (lobby.dataValues.player2 === null) {
           //console.log("lobby", lobby.dataValues.player2);
-          // console.log(req.body);
+          //console.log(req.body);
           //const updateLobby = { ...req.body, status: "writing" };
           const { player } = req.body;
 
