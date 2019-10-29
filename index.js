@@ -18,7 +18,7 @@ app
   .use(playerRouter) // sign up
   .use(authRouter) // log in
   .use(lobbyRouter)
-  //.use(authMiddleware)
+  //.use(authMiddleware) /
   .get("/", (req, res) => {
     res.status(200);
     res.send("Hello World");
