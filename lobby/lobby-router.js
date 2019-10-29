@@ -19,6 +19,22 @@ async function update() {
   stream.send(data);
 }
 
+function getStream(id) {
+  let stream = streams[id];
+  if (!stream) {
+    stream = streams[id] = new Sse();
+  }
+
+  return stream;
+}
+
+function updateStream(entity) {
+  const stream = getStream(entity.id);
+  const data = JSON.stringify(entity);
+
+  stream.send(data);
+}
+
 // Get all Lobbies -- works
 router.get("/lobbies", async (req, res) => {
   //console.log("Hi from Stream");
@@ -32,14 +48,24 @@ router.get("/lobbies", async (req, res) => {
 
 // Stream one specifc lobby
 router
-  .get("/streams/:id", async (req, res) => {
-    const stream = streams[req.params.id];
+  .get("/lobbies/:id", async (req, res) => {
+    try {
+      console.log("REQ-ID", req.params.id);
 
-    const entity = Lobby.findByPk(req.params.id);
-    const data = JSON.stringify(entity);
+      const stream = getStream(req.params.id);
 
-    stream.updateInit(data);
-    stream.init(req, res);
+      const entity = await Lobby.findByPk(req.params.id, { include: [Text] });
+      //console.log("ENTITY", entity);
+      const data = JSON.stringify(entity);
+
+      console.log("DATA", data);
+      console.log("STREAM", stream);
+
+      stream.updateInit(data);
+      stream.init(req, res);
+    } catch (error) {
+      console.log("Error in GET ONE LOBBY", error);
+    }
   })
 
   // Get one Lobby
@@ -57,24 +83,34 @@ router
   //     // stream.init(req, res);
   //   })
 
+  // .get("/lobbies/:id", (req, res, next) => {
+  //   Lobby.findByPk(req.params.id, { include: [Text] })
+  //     .then(lobby => {
+  //       res.send(lobby);
+  //     })
+  //     .catch(next);
+  // })
+
   .post("/lobbies", async (req, res) => {
     //console.log("Req Body is", req.body);
-    const { name } = req.body;
+    const { name, title, player, description } = req.body;
 
     const entity = await Lobby.create({
       name,
+      storyTitle: title,
+      player1: player,
+      storyDescription: description,
       status: "waiting"
     });
 
     // Update the string for the stream
     await update();
 
-    const stream = (streams[entity.id] = new Sse());
-    const serialized = JSON.stringify(entity);
-    stream.send(serialized);
+    updateStream(entity);
 
     res.status(201);
-    res.send("Thanks for adding a Lobby");
+    //res.send("Thanks for adding a Lobby");
+    res.send(entity);
   });
 
 // Edit Lobby
@@ -106,15 +142,9 @@ router.put("/lobbies/:id", async (req, res, next) => {
 
       await lobby.update(updateLobby);
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
-      const data = JSON.stringify(updated);
 
-      console.log("streams", streams);
+      updateStream(updated);
 
-      let stream = streams[req.params.id];
-
-      if (!stream) {
-        stream = streams[req.params.id] = new Sse();
-      }
       console.log("streams UPDATE", streams);
       stream.send(data);
 
@@ -138,6 +168,7 @@ router.delete("/lobbies/:id", (req, res, next) => {
   })
     .then(numDeleted => {
       if (numDeleted) {
+        updateStream({ id: req.params.id });
         res.status(204).end();
       } else {
         res.status(404).end();

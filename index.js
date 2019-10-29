@@ -1,13 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const authMiddleware = require("./auth/authMiddleware");
+//const authMiddleware = require("./auth/authMiddleware");
 
 // Routers
 const playerRouter = require("./players/player-router");
 const authRouter = require("./auth/auth-router");
 const lobbyRouter = require("./lobby/lobby-router");
-const textModel = require("./texts/text-model");
+const textRouter = require("./texts/text-router");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -20,7 +20,7 @@ app
   .use(authRouter) // log in
   //.use(authMiddleware)
   .use(lobbyRouter)
-  .use(textModel)
+  .use(textRouter)
   .get("/", (req, res) => {
     res.status(200);
     res.send("Hello World");
