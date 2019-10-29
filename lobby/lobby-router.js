@@ -1,105 +1,144 @@
 const { Router } = require("express");
 const Sse = require("json-sse");
 const Lobby = require("./lobby-model");
+const Text = require("../texts/text-model");
+const { toData } = require("../auth/jwt");
 
 const router = new Router();
 const stream = new Sse();
 
+//Dictionary
+const streams = {};
+
+//console.log("streams at beginning", streams);
+
+async function update() {
+  const lobbiesList = await Lobby.findAll();
+  const data = JSON.stringify(lobbiesList);
+  stream.send(data);
+}
+
+function getStream(id) {
+  let stream = streams[id];
+  if (!stream) {
+    stream = streams[id] = new Sse();
+  }
+
+  return stream;
+}
+
+function updateStream(entity) {
+  const stream = getStream(entity.id);
+  const data = JSON.stringify(entity);
+
+  stream.send(data);
+}
+
+// Get all Lobbies -- works
 router.get("/lobbies", async (req, res) => {
   //console.log("Hi from Stream");
   const lobbiesList = await Lobby.findAll();
-
   const data = JSON.stringify(lobbiesList);
-  //console.log("After Stringify - lobbies in Db", data);
 
   // Test with http :5000/lobbies --stream
   stream.updateInit(data);
   stream.init(req, res);
 });
 
-// Get one Lobby
+// Stream one specifc lobby
 router
-  .get("/lobbies/:id", async (req, res, next) => {
-    const lobbyStream = await Lobby.findByPk(req.params.id);
+  .get("/lobbies/:id", async (req, res) => {
+    try {
+      // console.log("REQ-ID", req.params.id);
 
-    const data = JSON.stringify(lobbyStream);
-    //console.log("After Stringify - lobby in Db", data);
+      const stream = getStream(req.params.id);
 
-    // Test with http :5000/lobbies/:id --stream
-    stream.updateInit(data);
-    stream.init(req, res);
+      const entity = await Lobby.findByPk(req.params.id, { include: [Text] });
+      //console.log("ENTITY", entity);
+      const data = JSON.stringify(entity);
+
+      // console.log("DATA", data);
+      // console.log("STREAM", stream);
+
+      stream.updateInit(data);
+      stream.init(req, res);
+    } catch (error) {
+      //console.log("Error in GET ONE LOBBY", error);
+    }
   })
-  //     .then(lobby => {
-  //       res.send(lobby);
-  //     })
-  //     .catch(next);
-  // })
 
   .post("/lobbies", async (req, res) => {
-    //console.log("Req Body is", req.body);
-    const { name } = req.body;
+    try {
+      //console.log("Req Body is", req.body);
+      const { name, title, description } = req.body;
+      //console.log("REQ", req.headers);
+      const { playerjwt } = req.headers;
+      //console.log("TO DATA", toData(playerjwt));
 
-    const entity = await Lobby.create({
-      name
-    });
+      const entity = await Lobby.create({
+        name,
+        storyTitle: title,
+        player1: toData(playerjwt).playerId,
+        storyDescription: description,
+        status: "waiting"
+      });
 
-    // Update the string for the stream
-    const lobbiesList = await Lobby.findAll();
-    const data = JSON.stringify(lobbiesList);
-    stream.send(data);
+      // Update the string for the stream
+      await update();
 
-    res.status(201);
-    res.send("Thanks for adding a Lobby");
+      updateStream(entity);
+
+      res.status(201);
+      //res.send("Thanks for adding a Lobby");
+      res.send(entity);
+    } catch (error) {
+      console.log("error", error);
+    }
   });
 
 // Edit Lobby
-
-// see if play 1 / 2 is taken ==> logic in DB in Post request
 // if player is in that room --> be directed to game straigt away
-// status difference between full and playing or finished
 
-router.put("/lobbies/:id", (req, res, next) => {
-  Lobby.findByPk(req.params.id)
-    .then(lobby => {
-      if (lobby) {
-        if (lobby.dataValues.player1 === null) {
-          // console.log("lobby", lobby.dataValues.player1);
-          // console.log(req.body);
-          const { player } = req.body;
-          //console.log(player);
+router.put("/lobbies/:id", async (req, res, next) => {
+  try {
+    const lobby = await Lobby.findByPk(req.params.id);
 
-          const updateLobby = { player1: player, status: "waiting" };
-          // console.log("update Lobby P1", updateLobby);
+    if (lobby) {
+      const { player1, player2 } = lobby.dataValues;
+      const { player } = req.body;
+      //const updateLobby = { status: "waiting" };
+      const updateLobby = {};
+      let key = "player1";
 
-          lobby
-            .update(updateLobby)
-            .then(() =>
-              res
-                .status(200)
-                .send({ message: "Player added succesfully to the lobby" })
-            );
-        } else if (lobby.dataValues.player2 === null) {
-          //console.log("lobby", lobby.dataValues.player2);
-          //console.log(req.body);
-          //const updateLobby = { ...req.body, status: "writing" };
-          const { player } = req.body;
+      //this seat is filled when a new game is created. Doesn't have to be in the logic.
+      if (player1) {
+        key = "player2";
+        updateLobby = { status: "writing" };
 
-          const updateLobby = { player2: player, status: "waiting" };
-          console.log("update Lobby P2", updateLobby);
-
-          lobby.update(updateLobby).then(() =>
-            res.status(200).send({
-              message: "Player added succesfully to the writing room"
-            })
-          );
-        } else {
-          res.status(429).send({ message: "This writing room is full" });
+        if (player2) {
+          return res.status(429).send({ message: "This writing room is full" });
         }
-      } else {
-        res.status(404).end();
       }
-    })
-    .catch(next);
+
+      updateLobby[key] = player;
+
+      await lobby.update(updateLobby);
+      const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
+
+      updateStream(updated);
+
+      //console.log("streams UPDATE", streams);
+      stream.send(data);
+
+      return res
+        .status(200)
+        .send({ message: "Player added succesfully to the lobby" });
+    }
+
+    res.status(429).send({ message: "This writing room does not exist" });
+  } catch (error) {
+    //console.log("error", error);
+  }
 });
 
 // Delete Lobby
@@ -111,6 +150,7 @@ router.delete("/lobbies/:id", (req, res, next) => {
   })
     .then(numDeleted => {
       if (numDeleted) {
+        updateStream({ id: req.params.id });
         res.status(204).end();
       } else {
         res.status(404).end();
