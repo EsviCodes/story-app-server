@@ -68,25 +68,32 @@ router
   })
 
   .post("/lobbies", async (req, res) => {
-    //console.log("Req Body is", req.body);
-    const { name, title, playerJWT, description } = req.body;
+    try {
+      //console.log("Req Body is", req.body);
+      const { name, title, description } = req.body;
+      //console.log("REQ", req.headers);
+      const { playerjwt } = req.headers;
+      //console.log("TO DATA", toData(playerjwt));
 
-    const entity = await Lobby.create({
-      name,
-      storyTitle: title,
-      player1: toData(playerJWT), // DONT SENT TOKEN IN DB
-      storyDescription: description,
-      status: "waiting"
-    });
+      const entity = await Lobby.create({
+        name,
+        storyTitle: title,
+        player1: toData(playerjwt).playerId, // DONT SENT TOKEN IN DB
+        storyDescription: description,
+        status: "waiting"
+      });
 
-    // Update the string for the stream
-    await update();
+      // Update the string for the stream
+      await update();
 
-    updateStream(entity);
+      updateStream(entity);
 
-    res.status(201);
-    //res.send("Thanks for adding a Lobby");
-    res.send(entity);
+      res.status(201);
+      //res.send("Thanks for adding a Lobby");
+      res.send(entity);
+    } catch (error) {
+      console.log("error", error);
+    }
   });
 
 // Edit Lobby
