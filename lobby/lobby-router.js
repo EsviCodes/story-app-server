@@ -102,10 +102,12 @@ router
 router.put("/lobbies/:id", async (req, res, next) => {
   try {
     const lobby = await Lobby.findByPk(req.params.id);
+    console.log("PUT REQUEST");
 
     if (lobby) {
       const { player1, player2 } = lobby.dataValues;
-      const { player } = req.body;
+      //const { player } = req.body;
+      const { playerjwt } = req.headers;
       //const updateLobby = { status: "waiting" };
       const updateLobby = {};
       let key = "player1";
@@ -120,7 +122,8 @@ router.put("/lobbies/:id", async (req, res, next) => {
         }
       }
 
-      updateLobby[key] = player;
+      //CHECK IF THIS WORKS TOMORROW
+      updateLobby[key] = toData(playerjwt).playerId;
 
       await lobby.update(updateLobby);
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
