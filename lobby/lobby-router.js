@@ -1,35 +1,48 @@
 const { Router } = require("express");
+const Sse = require("json-sse");
 const Lobby = require("./lobby-model");
-const Player = require("../players/player-model");
 
 const router = new Router();
+const stream = new Sse();
 
-// see if play 1 / 2 is taken ==> logic in DB in Post request
+router.get("/lobbies", async (req, res) => {
+  //console.log("Hi from Stream");
+  const lobbiesList = await Lobby.findAll();
 
-// Get all Lobbies
-router.get("/lobbies", (req, res, next) => {
-  Lobby.findAll()
-    .then(lobbies => {
-      res.send(lobbies);
-    })
-    .catch(next);
+  const data = JSON.stringify(lobbiesList);
+  console.log("After Stringify - lobbies in Db", data);
+
+  // Test with http :5000/lobbies --stream
+  stream.updateInit(data);
+  stream.init(req, res);
 });
 
 // Get one Lobby
-router.get("/lobbies/:id", (req, res, next) => {
-  Lobby.findByPk(req.params.id, { include: [Player] })
-    .then(lobby => {
-      res.send(lobby);
-    })
-    .catch(next);
-});
+router
+  .get("/lobbies/:id", (req, res, next) => {
+    Lobby.findByPk(req.params.id)
+      .then(lobby => {
+        res.send(lobby);
+      })
+      .catch(next);
+  })
 
-//Create new Lobby
-router.post("/lobbies", (req, res, next) => {
-  Lobby.create(req.body)
-    .then(lobby => res.json(lobby))
-    .catch(next);
-});
+  .post("/lobbies", async (req, res) => {
+    //console.log("Req Body is", req.body);
+    const { name } = req.body;
+
+    const entity = await Lobby.create({
+      name
+    });
+
+    // Update the string for the stream
+    const lobbiesList = await Lobby.findAll();
+    const data = JSON.stringify(lobbiesList);
+    stream.send(data);
+
+    res.status(201);
+    res.send("Thanks for adding a Lobby");
+  });
 
 // Edit Lobby
 
