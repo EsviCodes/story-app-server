@@ -17,8 +17,8 @@ app
   .use(jsonParser)
   .use(playerRouter) // sign up
   .use(authRouter) // log in
-  .use(authMiddleware)
   .use(lobbyRouter)
+  //.use(authMiddleware)
   .get("/", (req, res) => {
     res.status(200);
     res.send("Hello World");
