@@ -16,8 +16,8 @@ app
   .use(cors())
   .use(jsonParser)
   .use(playerRouter) // sign up
-  .use(authRouter) // log in
-  .use(authMiddleware)
+  //   .use(authRouter) // log in
+  //   .use(authMiddleware)
   .use(lobbyRouter)
   .get("/", (req, res) => {
     res.status(200);
