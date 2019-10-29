@@ -9,6 +9,8 @@ const stream = new Sse();
 //Dictionary
 const streams = {};
 
+console.log("streams at beginning", streams);
+
 //componentdidmount in app components, so it will always stream
 
 async function update() {
@@ -36,7 +38,6 @@ router
     const entity = Lobby.findByPk(req.params.id);
     const data = JSON.stringify(entity);
 
-    // Test with http :5000/lobbies --stream
     stream.updateInit(data);
     stream.init(req, res);
   })
