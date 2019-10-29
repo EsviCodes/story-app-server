@@ -78,7 +78,7 @@ router
       const entity = await Lobby.create({
         name,
         storyTitle: title,
-        player1: toData(playerjwt).playerId, // DONT SENT TOKEN IN DB
+        player1: toData(playerjwt).playerId,
         storyDescription: description,
         status: "waiting"
       });
