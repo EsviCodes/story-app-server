@@ -21,4 +21,24 @@ router.get("/characters/:id", (req, res, next) => {
     .catch(next);
 });
 
+// Post Default Data
+router.post("/characters/default", (req, res, next) => {
+  Character.bulkCreate([
+    { character: "programmer" },
+    { character: "prince" },
+    { character: "princess" },
+    { character: "frog" },
+    { character: "cat" },
+    { character: "fluffy bunny" },
+    { character: "teacher" },
+    { character: "student" },
+    { character: "vegan sausage" },
+    { character: "pink elephant" }
+  ])
+    .then(() =>
+      res.status(201).send({ message: "Characters Data created succesfully" })
+    )
+    .catch(next);
+});
+
 module.exports = router;

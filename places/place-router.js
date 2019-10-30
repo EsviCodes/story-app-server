@@ -3,7 +3,7 @@ const Place = require("./place-model");
 
 const router = new Router();
 
-// Get all Places
+//Get all Places
 router.get("/places", (req, res, next) => {
   Place.findAll()
     .then(places => {
@@ -18,6 +18,26 @@ router.get("/places/:id", (req, res, next) => {
     .then(place => {
       res.send(place);
     })
+    .catch(next);
+});
+
+// Post Default Data
+router.post("/places/default", (req, res, next) => {
+  Place.bulkCreate([
+    { place: "England" },
+    { place: "a land Far Far Away" },
+    { place: "the Future" },
+    { place: "a Forest" },
+    { place: "the Rainbow" },
+    { place: "a Vulcano" },
+    { place: "the deep Sea" },
+    { place: "a House on the Prairie" },
+    { place: "Jane Austen's Home" },
+    { place: "a place called Codaisseur" }
+  ])
+    .then(() =>
+      res.status(201).send({ message: "Places Data created succesfully" })
+    )
     .catch(next);
 });
 

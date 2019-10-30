@@ -12,6 +12,7 @@ const characterRouter = require("./characters/character-router");
 const placeRouter = require("./places/place-router");
 const nounRouter = require("./nouns/noun-router");
 const verbRouter = require("./verbs/verb-router");
+const descriptionRouter = require("./description/description-router");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -29,6 +30,7 @@ app
   .use(placeRouter)
   .use(nounRouter)
   .use(verbRouter)
+  .use(descriptionRouter)
   .get("/", (req, res) => {
     res.status(200);
     res.send("Hello World");

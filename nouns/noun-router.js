@@ -21,4 +21,24 @@ router.get("/nouns/:id", (req, res, next) => {
     .catch(next);
 });
 
+// Post default Data
+router.post("/nouns/default", (req, res, next) => {
+  Noun.bulkCreate([
+    { noun: "world" },
+    { noun: "better tomorrow" },
+    { noun: "castle" },
+    { noun: "kitten" },
+    { noun: "computer program" },
+    { noun: "candy" },
+    { noun: "chickpeas" },
+    { noun: "heart" },
+    { noun: "galaxy" },
+    { noun: "koala" }
+  ])
+    .then(() =>
+      res.status(201).send({ message: "Nouns Data created succesfully" })
+    )
+    .catch(next);
+});
+
 module.exports = router;

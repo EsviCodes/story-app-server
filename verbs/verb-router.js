@@ -21,4 +21,23 @@ router.get("/verbs/:id", (req, res, next) => {
     .catch(next);
 });
 
+router.post("/verbs/default", (req, res, next) => {
+  Verb.bulkCreate([
+    { verb: "love" },
+    { verb: "save" },
+    { verb: "decorate" },
+    { verb: "program" },
+    { verb: "travel" },
+    { verb: "cuddle" },
+    { verb: "create" },
+    { verb: "seek" },
+    { verb: "live" },
+    { verb: "dream" }
+  ])
+    .then(() =>
+      res.status(201).send({ message: "Verbs Data created succesfully" })
+    )
+    .catch(next);
+});
+
 module.exports = router;
