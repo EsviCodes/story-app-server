@@ -6,7 +6,7 @@ const Character = db.define("character", {
 });
 
 // Force true is on, because otherwise it will constantly fill up my database everytime it's running. I only want 10 in there.
-db.sync({ force: true })
+db.sync({ force: false })
   .then(() => console.log("Character is Running"))
   .then(() => {
     Character.bulkCreate([
