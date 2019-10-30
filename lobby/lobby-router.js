@@ -87,7 +87,7 @@ router
       const entity = await Lobby.create({
         name,
         storyTitle: title,
-        player1: toData(playerjwt).playerId,
+        player1Id: toData(playerjwt).playerId,
         storyDescription: description,
         status: "waiting"
       });
@@ -119,13 +119,13 @@ router.put("/lobbies/:id", async (req, res, next) => {
       const { playerjwt } = req.headers;
       //const updateLobby = { status: "waiting" };
       let updateLobby = {};
-      let key = "player1";
+      let key = "player1Id";
 
       //this seat is filled when a new game is created. Doesn't have to be in the logic.
       if (player1) {
         console.log("Player 1 existst");
         console.log("key", key);
-        key = "player2";
+        key = "player2Id";
         console.log("key", key);
         console.log("updateLobby", updateLobby);
         updateLobby = { status: "writing" };
@@ -168,7 +168,7 @@ router.put("/lobbies/:id/quit", async (req, res, next) => {
     // console.log("LOBBY", lobby);
 
     if (lobby) {
-      await lobby.update({ player1: null, player2: null, status: "end" });
+      await lobby.update({ player1Id: null, player2Id: null, status: "end" });
       console.log("lobby", lobby);
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
       console.log("updated lobby", updated);

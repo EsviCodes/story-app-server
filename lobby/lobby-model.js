@@ -5,8 +5,8 @@ const Lobby = db.define(
   "lobby",
   {
     name: Sequelize.STRING, // name of the lobby
-    player1: Sequelize.INTEGER, // shows the player's ID
-    player2: Sequelize.INTEGER, //  shows the player's ID
+    player1Id: Sequelize.INTEGER, // shows the player's ID
+    player2Id: Sequelize.INTEGER, //  shows the player's ID
     storyTitle: Sequelize.STRING,
     storyDescription: Sequelize.TEXT,
     status: Sequelize.STRING // full - waiting - writing
