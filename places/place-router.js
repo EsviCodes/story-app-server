@@ -29,7 +29,7 @@ router.post("/places/default", (req, res, next) => {
     { place: "the Future" },
     { place: "a Forest" },
     { place: "the Rainbow" },
-    { place: "a Vulcano" },
+    { place: "a Volcano" },
     { place: "the deep Sea" },
     { place: "a House on the Prairie" },
     { place: "Jane Austen's Home" },
