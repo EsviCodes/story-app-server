@@ -23,7 +23,7 @@ This app is a multiple player game to create stories together.
 - Text
 .. sentence, player, story
 
-Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (part of sentece with verb).
+Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (verb) _BLANK_ (noun).
 - place
 - character
 - verb 
