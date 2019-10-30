@@ -31,6 +31,7 @@ function getStream(id) {
 }
 
 function updateStream(entity) {
+  console.log("Update Stream Entity", entity);
   const stream = getStream(entity.id);
   const data = JSON.stringify(entity);
 
@@ -87,7 +88,7 @@ router
       const entity = await Lobby.create({
         name,
         storyTitle: title,
-        player1Id: toData(playerjwt).playerId,
+        player1: toData(playerjwt).playerId,
         storyDescription: description,
         status: "waiting"
       });
@@ -114,18 +115,18 @@ router.put("/lobbies/:id", async (req, res, next) => {
 
     if (lobby) {
       console.log("lobby existst");
-      const { player1, player2, status } = lobby.dataValues;
+      const { player1, player2 } = lobby.dataValues;
       //const { player } = req.body;
       const { playerjwt } = req.headers;
       //const updateLobby = { status: "waiting" };
       let updateLobby = {};
-      let key = "player1Id";
+      let key = "player1";
 
       //this seat is filled when a new game is created. Doesn't have to be in the logic.
       if (player1) {
         console.log("Player 1 existst");
         console.log("key", key);
-        key = "player2Id";
+        key = "player2";
         console.log("key", key);
         console.log("updateLobby", updateLobby);
         updateLobby = { status: "writing" };
@@ -138,11 +139,13 @@ router.put("/lobbies/:id", async (req, res, next) => {
       }
 
       console.log("updateLobby", updateLobby);
-      console.log("SECOND PLAYER", toData(playerjwt).playerId);
+      //console.log("SECOND PLAYER", toData(playerjwt).playerId);
       updateLobby[key] = toData(playerjwt).playerId;
 
       await lobby.update(updateLobby);
+      //console.log("updatedLobby", updateLobby);
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
+      console.log("Updated", updated);
 
       updateStream(updated);
 
@@ -152,12 +155,60 @@ router.put("/lobbies/:id", async (req, res, next) => {
       return res
         .status(200)
         .send({ message: "Player added succesfully to the lobby" });
+      //.send(updated)
     }
 
     res.status(429).send({ message: "This writing room does not exist" });
   } catch (error) {
     //console.log("error", error);
   }
+});
+
+// Edit - Put new texts to lobby
+router.put("/lobbies/:id/texts"),
+  async (req, res, next) => {
+    try {
+      console.log("Texts update from lobby");
+      const texts = await Text.findAll({
+        where: { lobbyId: req.params.id }
+      });
+      console.log("Texts", texts);
+    } catch (error) {
+      console.log("error TEXT", error);
+    }
+  };
+
+router.post("/texts", (req, res, next) => {
+  console.log("post /texts");
+  const { playerjwt } = req.headers;
+  const { text, lobbyId } = req.body;
+  Text.create({
+    text: text,
+    lobbyId: lobbyId,
+    playerId: toData(playerjwt).playerId
+  })
+    .then(() => {
+      console.log("Next post/text find all");
+      return Text.findAll({
+        where: { lobbyId: req.body.lobbyId }
+      });
+    })
+    .then(text => {
+      // all texts in a specific Lobby
+      console.log("texts being sent to stream", text);
+      //const updatedTexts = text
+      console.log("Req.Params", req.params.id);
+      console.log("req.body", req.body);
+      return Lobby.findByPk(lobbyId, { include: [Text] }).then(updated => {
+        console.log("Updated", updated);
+        updateStream(updated);
+      });
+
+      //updateStream(text);
+
+      res.json(text);
+    })
+    .catch(next);
 });
 
 // Edit - Stop a Game
@@ -168,7 +219,7 @@ router.put("/lobbies/:id/quit", async (req, res, next) => {
     // console.log("LOBBY", lobby);
 
     if (lobby) {
-      await lobby.update({ player1Id: null, player2Id: null, status: "end" });
+      await lobby.update({ player1: null, player2: null, status: "end" });
       console.log("lobby", lobby);
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
       console.log("updated lobby", updated);

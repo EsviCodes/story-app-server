@@ -24,17 +24,17 @@ router.get("/texts/:id", (req, res, next) => {
 });
 
 //Create new Text
-router.post("/texts", (req, res, next) => {
-  const { playerjwt } = req.headers;
-  const { text, lobbyId } = req.body;
-  Text.create({
-    text: text,
-    lobbyId: lobbyId,
-    playerId: toData(playerjwt).playerId
-  })
-    .then(text => res.json(text))
-    .catch(next);
-});
+// router.post("/texts", (req, res, next) => {
+//   const { playerjwt } = req.headers;
+//   const { text, lobbyId } = req.body;
+//   Text.create({
+//     text: text,
+//     lobbyId: lobbyId,
+//     playerId: toData(playerjwt).playerId
+//   })
+//     .then(text => res.json(text))
+//     .catch(next);
+// });
 
 // Edit text
 router.put("/texts/:id", (req, res, next) => {
