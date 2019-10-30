@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const Text = require("./text-model");
 const Lobby = require("../lobby/lobby-model");
+const { toData } = require("../auth/jwt");
 
 const router = new Router();
 
@@ -24,7 +25,13 @@ router.get("/texts/:id", (req, res, next) => {
 
 //Create new Text
 router.post("/texts", (req, res, next) => {
-  Text.create(req.body)
+  const { playerjwt } = req.headers;
+  const { text, lobbyId } = req.body;
+  Text.create({
+    text: text,
+    lobbyId: lobbyId,
+    playerId: toData(playerjwt).playerId
+  })
     .then(text => res.json(text))
     .catch(next);
 });

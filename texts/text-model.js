@@ -6,7 +6,7 @@ const Text = db.define(
   "text",
   {
     text: Sequelize.TEXT,
-    player: Sequelize.INTEGER //player id
+    playerId: Sequelize.INTEGER
   },
 
   {
