@@ -9,7 +9,6 @@ const router = new Router();
 
 router.get("/description/random", (req, res, next) => {
   //console.log("Description is working"); // works
-
   Promise.all([
     Place.findOne({
       order: [Sequelize.fn("RANDOM")]
@@ -25,7 +24,7 @@ router.get("/description/random", (req, res, next) => {
     })
   ])
     .then(values => {
-      console.log("values", values);
+      //console.log("values", values);
 
       const description = {
         place: values[0].place,
