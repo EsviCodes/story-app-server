@@ -10,7 +10,7 @@ const lobbyRouter = require("./lobby/lobby-router");
 const textRouter = require("./texts/text-router");
 const characterRouter = require("./characters/character-router");
 const placeRouter = require("./places/place-router");
-const nounRouter = require("./nouns/noun-model");
+const nounRouter = require("./nouns/noun-router");
 const verbRouter = require("./verbs/verb-router");
 
 const app = express();
