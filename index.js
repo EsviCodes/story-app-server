@@ -9,6 +9,7 @@ const authRouter = require("./auth/auth-router");
 const lobbyRouter = require("./lobby/lobby-router");
 const textRouter = require("./texts/text-router");
 const characterRouter = require("./characters/character-router");
+const placeRouter = require("./places/place-router");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app
   .use(lobbyRouter)
   .use(textRouter)
   .use(characterRouter)
+  .use(placeRouter)
   .get("/", (req, res) => {
     res.status(200);
     res.send("Hello World");
