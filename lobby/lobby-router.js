@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const Sequelize = require("sequelize");
 const Sse = require("json-sse");
 const Lobby = require("./lobby-model");
 const Text = require("../texts/text-model");
@@ -7,13 +8,19 @@ const { toData } = require("../auth/jwt");
 const router = new Router();
 const stream = new Sse();
 
+const Op = Sequelize.Op;
+
 //Dictionary
 const streams = {};
 
 //console.log("streams at beginning", streams);
 
 async function update() {
-  const lobbiesList = await Lobby.findAll();
+  const lobbiesList = await Lobby.findAll({
+    where: {
+      [Op.or]: [{ status: "waiting" }, { status: "writing" }]
+    }
+  });
   const data = JSON.stringify(lobbiesList);
   stream.send(data);
 }
@@ -38,6 +45,8 @@ function updateStream(entity) {
 router.get("/lobbies", async (req, res) => {
   //console.log("Hi from Stream");
   const lobbiesList = await Lobby.findAll();
+
+  // filter to only send back lobby where lobbies have players waiting
   const data = JSON.stringify(lobbiesList);
 
   // Test with http :5000/lobbies --stream
@@ -102,27 +111,36 @@ router
 router.put("/lobbies/:id", async (req, res, next) => {
   try {
     const lobby = await Lobby.findByPk(req.params.id);
-    console.log("PUT REQUEST");
+    // console.log("PUT REQUEST");
+    // console.log("LOBBY", lobby);
 
     if (lobby) {
+      console.log("lobby existst");
       const { player1, player2 } = lobby.dataValues;
       //const { player } = req.body;
       const { playerjwt } = req.headers;
       //const updateLobby = { status: "waiting" };
-      const updateLobby = {};
+      let updateLobby = {};
       let key = "player1";
 
       //this seat is filled when a new game is created. Doesn't have to be in the logic.
       if (player1) {
+        //console.log("Player 1 existst");
+        //console.log("key", key);
         key = "player2";
+        //console.log("key", key);
+        //console.log("updateLobby", updateLobby);
         updateLobby = { status: "writing" };
+        //console.log("updateLobby", updateLobby);
 
         if (player2) {
+          //console.log("Player 2 existst");
           return res.status(429).send({ message: "This writing room is full" });
         }
       }
 
-      //CHECK IF THIS WORKS TOMORROW
+      // console.log("updateLobby", updateLobby);
+      // console.log("SECOND PLAYER", toData(playerjwt).playerId);
       updateLobby[key] = toData(playerjwt).playerId;
 
       await lobby.update(updateLobby);
