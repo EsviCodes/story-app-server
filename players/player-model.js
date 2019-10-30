@@ -20,4 +20,7 @@ const Player = db.define(
   }
 );
 
+db.sync({ force: false })
+  .then(() => console.log("Players is Running"))
+  .catch(console.error);
 module.exports = Player;

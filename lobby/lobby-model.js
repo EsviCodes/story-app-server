@@ -17,4 +17,8 @@ const Lobby = db.define(
   }
 );
 
+db.sync({ force: false })
+  .then(() => console.log("Lobby is Running"))
+  .catch(console.error);
+
 module.exports = Lobby;

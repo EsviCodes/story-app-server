@@ -125,16 +125,16 @@ router.put("/lobbies/:id", async (req, res, next) => {
 
       //this seat is filled when a new game is created. Doesn't have to be in the logic.
       if (player1) {
-        console.log("Player 1 existst");
+        //console.log("Player 1 existst");
         //console.log("key", key);
         key = "player2";
         //console.log("key", key);
-        console.log("updateLobby", updateLobby);
+        //console.log("updateLobby", updateLobby);
         updateLobby = { status: "writing" };
-        console.log("updateLobby", updateLobby);
+        //console.log("updateLobby", updateLobby);
 
         if (player2) {
-          console.log("Player 2 existst");
+          //console.log("Player 2 existst");
           return res.status(429).send({ message: "This writing room is full" });
         }
       }

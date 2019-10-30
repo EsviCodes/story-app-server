@@ -18,4 +18,8 @@ const Text = db.define(
 Text.belongsTo(Lobby);
 Lobby.hasMany(Text);
 
+db.sync({ force: false })
+  .then(() => console.log("Text is Running"))
+  .catch(console.error);
+
 module.exports = Text;
