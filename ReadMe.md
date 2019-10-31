@@ -1,9 +1,16 @@
-# Plan of approach
+# Story Writing Game
 
 ## Synopisis
-This app is a multiple player game to create stories together.
+Have you always wanted to write a story together with your friends, or maybe with a random stranger? This is the app for you! Create a new writing room, think of a title for your story, write the first sentece, and once another writer joins you, you are good to go! It's that simple. Happy Writing!
+
+This app is a multiple player game to write a story together.
+
+## Rules
+Writing a story together is much fun, and in order to let it work, 
 
 ### features
+- Write a story with
+
 - Supports multiple simultaneous games with a lobby system;
 X generate random story items
 X Start with a given first sentence

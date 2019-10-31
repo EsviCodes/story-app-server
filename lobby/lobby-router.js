@@ -4,7 +4,6 @@ const Sse = require("json-sse");
 const Lobby = require("./lobby-model");
 const Text = require("../texts/text-model");
 const { toData } = require("../auth/jwt");
-const Player = require("../players/player-model");
 
 const router = new Router();
 const stream = new Sse();
@@ -56,9 +55,7 @@ router
   .get("/lobbies/:id", async (req, res) => {
     try {
       const stream = getStream(req.params.id);
-
       const entity = await Lobby.findByPk(req.params.id, { include: [Text] });
-
       const data = JSON.stringify(entity);
 
       stream.updateInit(data);
