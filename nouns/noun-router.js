@@ -30,7 +30,7 @@ router.post("/nouns/default", (req, res, next) => {
     { noun: "kitten" },
     { noun: "computer program" },
     { noun: "candy" },
-    { noun: "chickpeas" },
+    { noun: "chickpea" },
     { noun: "heart" },
     { noun: "galaxy" },
     { noun: "koala" }

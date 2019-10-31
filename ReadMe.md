@@ -1,15 +1,21 @@
-# Plan of approach
+# Story Writing Game
 
 ## Synopisis
-This app is a multiple player game to create stories together.
+Have you always wanted to write a story together with your friends, or maybe with a random stranger? This is the app for you! Create a new writing room, think of a title for your story, write the first sentece, and once another writer joins you, you are good to go! It's that simple. Happy Writing!
+
+This app is a multiple player game to write a story together.
+
+## Rules
+Writing a story together is much fun, and in order to let it work, 
 
 ### features
+- Write a story with
+
 - Supports multiple simultaneous games with a lobby system;
-- A story can be written with t
-- generate random story items
-- Start with a given first sentence
-- Choose from different themes / topics
-- If a player creates a new story, he/she can create story items him/herself and wait for another person who wants to write that story together
+X generate random story items
+X Start with a given first sentence
+X Choose from different themes / topics
+X If a player creates a new story, he/she can create story items him/herself and wait for another person who wants to write that story together
 - Use a dice to randomly select story outputs (like dungeon and dragons)
 
 
@@ -30,27 +36,9 @@ Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (
 - noun 
 
 
-2. What reducers will the store have?
-
-3. What routes will be handled on the frontend?
-/signup
-/login
-/ 
-
-
-4. What routes will be handled on the backend
-- /signup
-.. For creating new players
-
-- /login
-.. For logging in with an existing player
-
-/story
-/text
-/place
-/character
-/verb
-/noun
-
 #### thoughts
 - We can write our own story API or look for an excisting story writing API
+
+- Take turn
+- - back-end ?
+- quit the turn

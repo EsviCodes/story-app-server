@@ -32,7 +32,7 @@ router.post("/verbs/default", (req, res, next) => {
     { verb: "create" },
     { verb: "seek" },
     { verb: "live" },
-    { verb: "dream" }
+    { verb: "dream about" }
   ])
     .then(() =>
       res.status(201).send({ message: "Verbs Data created succesfully" })
