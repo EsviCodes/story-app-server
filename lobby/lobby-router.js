@@ -4,6 +4,7 @@ const Sse = require("json-sse");
 const Lobby = require("./lobby-model");
 const Text = require("../texts/text-model");
 const { toData } = require("../auth/jwt");
+const Player = require("../players/player-model");
 
 const router = new Router();
 const stream = new Sse();
@@ -70,6 +71,7 @@ router
       const { name, title, description } = req.body;
 
       const { playerjwt } = req.headers;
+      // playerjwt gives only the PlayerId
 
       const entity = await Lobby.create({
         name,
@@ -78,6 +80,8 @@ router
         storyDescription: description,
         status: "waiting"
       });
+
+      //username = await // sending new entity with extra information about username player1 & 2
 
       // Update the string for the stream
       await update();
@@ -147,23 +151,31 @@ router.post("/texts", (req, res, next) => {
       });
     })
     .then(text => {
-      Lobby.findByPk(lobbyId).then(lobby => {
+      // After a text is send, the turn shifts
+      return Lobby.findByPk(lobbyId).then(lobby => {
         if (lobby.dataValues.turnToPlay === 1) {
-          lobby.update({
+          return lobby.update({
             ...lobby.dataValues,
             turnToPlay: 2
           });
         } else {
-          lobby.update({
+          return lobby.update({
             ...lobby.dataValues,
             turnToPlay: 1
           });
         }
       });
-
+    })
+    .then(() => {
       return Lobby.findByPk(lobbyId, { include: [Text] }).then(updated => {
+        console.log("Updated", updated);
         updateStream(updated);
       });
+
+      // return Lobby.findByPk(lobbyId, { include: [Text] }).then(updated => {
+      //   console.log("Updated", updated);
+      //   updateStream(updated);
+      // });
 
       res.json(text);
     })
