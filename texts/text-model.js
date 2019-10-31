@@ -5,7 +5,7 @@ const Lobby = require("../lobby/lobby-model");
 const Text = db.define(
   "text",
   {
-    text: Sequelize.TEXT,
+    text: Sequelize.STRING, // set to STRING
     playerId: Sequelize.INTEGER
   },
 
