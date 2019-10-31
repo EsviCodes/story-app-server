@@ -5,8 +5,9 @@ Have you always wanted to write a story together with your friends, or maybe wit
 
 This app is a multiple player game to write a story together.
 
-## Rules
-Writing a story together is much fun, and in order to let it work, 
+## Tips to write an amazing story
+1. Say yes!
+.. Saying yes is the most important rule of writing a story together. 
 
 ### features
 - Write a story with
