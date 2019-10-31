@@ -31,7 +31,7 @@ function getStream(id) {
 }
 
 function updateStream(entity) {
-  console.log("Update Stream Entity", entity);
+  //console.log("Update Stream Entity", entity);
   const stream = getStream(entity.id);
   const data = JSON.stringify(entity);
 
@@ -164,22 +164,23 @@ router.put("/lobbies/:id", async (req, res, next) => {
   }
 });
 
-// Edit - Put new texts to lobby
-router.put("/lobbies/:id/texts"),
-  async (req, res, next) => {
-    try {
-      console.log("Texts update from lobby");
-      const texts = await Text.findAll({
-        where: { lobbyId: req.params.id }
-      });
-      console.log("Texts", texts);
-    } catch (error) {
-      console.log("error TEXT", error);
-    }
-  };
+// // Edit - Put new texts to lobby
+// router.put("/lobbies/:id/texts"),
+//   async (req, res, next) => {
+//     try {
+//       console.log("Texts update from lobby");
+//       const texts = await Text.findAll({
+//         where: { lobbyId: req.params.id }
+//       });
+//       console.log("Texts", texts);
+//     } catch (error) {
+//       console.log("error TEXT", error);
+//     }
+//   };
 
+// Sends new texts to
 router.post("/texts", (req, res, next) => {
-  console.log("post /texts");
+  //console.log("post /texts");
   const { playerjwt } = req.headers;
   const { text, lobbyId } = req.body;
   Text.create({
@@ -188,19 +189,40 @@ router.post("/texts", (req, res, next) => {
     playerId: toData(playerjwt).playerId
   })
     .then(() => {
-      console.log("Next post/text find all");
+      //console.log("Next post/text find all");
       return Text.findAll({
         where: { lobbyId: req.body.lobbyId }
       });
     })
     .then(text => {
       // all texts in a specific Lobby
-      console.log("texts being sent to stream", text);
+      //console.log("texts being sent to stream", text);
       //const updatedTexts = text
-      console.log("Req.Params", req.params.id);
-      console.log("req.body", req.body);
+      //console.log("Req.Params", req.params.id);
+      //console.log("req.body", req.body);
+
+      // This should update the database
+      // Update the database with put request
+      console.log("lobbyId", lobbyId);
+      Lobby.findByPk(lobbyId).then(lobby => {
+        console.log("Lobby", lobby);
+        if (lobby.dataValues.turnToPlay === 1) {
+          lobby.update({
+            ...lobby.dataValues,
+            turnToPlay: 2
+          });
+        } else {
+          lobby.update({
+            ...lobby.dataValues,
+            turnToPlay: 1
+          });
+        }
+      });
+
       return Lobby.findByPk(lobbyId, { include: [Text] }).then(updated => {
-        console.log("Updated", updated);
+        //console.log("Player's Turn", updated.dataValues.turnToPlay);
+
+        //console.log("Updated after turn", updated);
         updateStream(updated);
       });
 
@@ -220,9 +242,9 @@ router.put("/lobbies/:id/quit", async (req, res, next) => {
 
     if (lobby) {
       await lobby.update({ player1: null, player2: null, status: "end" });
-      console.log("lobby", lobby);
+      //console.log("lobby", lobby);
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
-      console.log("updated lobby", updated);
+      //console.log("updated lobby", updated);
 
       updateStream(updated);
 

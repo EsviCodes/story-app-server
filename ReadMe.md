@@ -31,3 +31,7 @@ Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (
 
 #### thoughts
 - We can write our own story API or look for an excisting story writing API
+
+- Take turn
+- - back-end ?
+- quit the turn
