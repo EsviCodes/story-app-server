@@ -19,11 +19,11 @@ const port = process.env.PORT || 5000;
 const jsonParser = bodyParser.json();
 
 app
-  // Fix cors bug? But isn't this the same as cors()?
-  .use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-  })
+  // // Fix cors bug? But isn't this the same as cors()?
+  // .use((req, res, next) => {
+  //   res.header("Access-Control-Allow-Origin", "*");
+  //   next();
+  // })
   .use(cors())
   .use(jsonParser)
   .use(playerRouter) // sign up
