@@ -18,12 +18,12 @@ How to write?
 2. Say yes! Go with whatever the other writer puts into the story and work from there.
 2. Examples:
 - Good
-- - player1: I'm so happy you gave me a bunny for my birthday. Thank you!
-- - player2: You're welcome! With your love for bunnies I thought that you'd like it.
+    - player1: I'm so happy you gave me a bunny for my birthday. Thank you!
+    - player2: You're welcome! With your love for bunnies I thought that you'd like it.
 
 - Wrong
-- - player1: I'm so happy you gave me a bunny for my birthday. Thank you!
-- - player2: I didn't give you a bunny. I gave you a rat.
+    - player1: I'm so happy you gave me a bunny for my birthday. Thank you!
+    - player2: I didn't give you a bunny. I gave you a rat.
 
 How to quit the story?
 1. Are you done writing your story? Don't forget to copy and save your text somewhere, because it isn't a build in feature (yet!)
