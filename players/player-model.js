@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../db");
-const Lobby = require("../lobby/lobby-model");
+
+// A player is a writer in the app
 
 const Player = db.define(
   "player",
