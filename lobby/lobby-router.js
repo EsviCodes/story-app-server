@@ -7,27 +7,34 @@ const { toData } = require("../auth/jwt");
 
 const router = new Router();
 const stream = new Sse();
-
 const Op = Sequelize.Op;
 
-//Dictionary
+// In this app, a lobby is a writing room where to writers (players) can join to write a story together
+
+// Dictionary to collect all the different streams which are created by getting a specific lobby
 const streams = {};
 
+// Functions used in stream-requests
+
+// Function that updates a lobby and sends the updated information to the stream /lobbies
 async function update() {
   const lobbiesList = await Lobby.findAll();
   const data = JSON.stringify(lobbiesList);
+
   stream.send(data);
 }
 
+// Function that looks for a stream with a specific id. If that stream does not exist, it will create a new stream.
+// The id of the stream relates to the id of a lobby
 function getStream(id) {
   let stream = streams[id];
   if (!stream) {
     stream = streams[id] = new Sse();
   }
-
   return stream;
 }
 
+// Function that updates an existing stream
 function updateStream(entity) {
   const stream = getStream(entity.id);
   const data = JSON.stringify(entity);
@@ -35,17 +42,18 @@ function updateStream(entity) {
   stream.send(data);
 }
 
-// Get all Lobbies -- works
-// message that no error is caught
+// End-Points
+
+// Get all lobbies --stream
 router.get("/lobbies", async (req, res) => {
   try {
     const lobbiesList = await Lobby.findAll({
+      // Filter to only get the lobbies where the status of the lobby is waiting || writing
       where: {
         [Op.or]: [{ status: "waiting" }, { status: "writing" }]
       }
     });
 
-    // filter to only send back lobby where lobbies have players waiting
     const data = JSON.stringify(lobbiesList);
 
     stream.updateInit(data);
@@ -55,7 +63,7 @@ router.get("/lobbies", async (req, res) => {
   }
 });
 
-// Stream one specifc lobby
+// Get one specific lobby --stream
 router
   .get("/lobbies/:id", async (req, res) => {
     try {
@@ -65,48 +73,44 @@ router
 
       stream.updateInit(data);
       stream.init(req, res);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   })
 
+  // Post a new lobby
   .post("/lobbies", async (req, res) => {
     try {
       const { name, title, description } = req.body;
-
       const { playerjwt } = req.headers;
-      // playerjwt gives only the PlayerId
 
       const entity = await Lobby.create({
         name,
         storyTitle: title,
+        // With a post-request the jwt-token is sent in the header so it can be translated to a player's id
         player1: toData(playerjwt).playerId,
         storyDescription: description,
+        // default status
         status: "waiting"
       });
 
-      //username = await // sending new entity with extra information about username player1 & 2
-
-      // Update the string for the stream
+      // Updates the new lobby to the stream
       await update();
-
       updateStream(entity);
-
       res.status(201);
-
       res.send(entity);
     } catch (error) {
       console.log("error", error);
     }
   });
 
-// Edit Lobby
+// End-point when a second player wants to join an existing lobby
 router.put("/lobbies/:id", async (req, res, next) => {
   try {
     const lobby = await Lobby.findByPk(req.params.id);
 
     if (lobby) {
-      console.log("lobby existst");
       const { player1, player2 } = lobby.dataValues;
-
       const { playerjwt } = req.headers;
 
       let updateLobby = {};
@@ -114,7 +118,6 @@ router.put("/lobbies/:id", async (req, res, next) => {
 
       if (player1) {
         key = "player2";
-
         updateLobby = { status: "writing" };
 
         if (player2) {
@@ -122,11 +125,15 @@ router.put("/lobbies/:id", async (req, res, next) => {
         }
       }
 
+      // With the brackets you create a variable key property
+      // In this case "key" which is either player1 or player2
       updateLobby[key] = toData(playerjwt).playerId;
 
+      // Updates the lobby
       await lobby.update(updateLobby);
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
 
+      // Updates the stream
       updateStream(updated);
 
       return res
@@ -135,25 +142,24 @@ router.put("/lobbies/:id", async (req, res, next) => {
     }
 
     res.status(429).send({ message: "This writing room does not exist" });
-  } catch (error) {}
+  } catch (error) {
+    console.log("error", error);
+  }
 });
 
-// Sends new texts to
+// End-point to which new sentences in a story are send
 router.post("/texts", (req, res, next) => {
   const { playerjwt } = req.headers;
   const { text, lobbyId } = req.body;
+
+  // Creates a new text
   Text.create({
     text: text,
     lobbyId: lobbyId,
     playerId: toData(playerjwt).playerId
   })
     .then(() => {
-      return Text.findAll({
-        where: { lobbyId: req.body.lobbyId }
-      });
-    })
-    .then(text => {
-      // After a text is send, the turn shifts
+      // After a text is send, the turn shifts to the other player
       return Lobby.findByPk(lobbyId).then(lobby => {
         if (lobby.dataValues.turnToPlay === 1) {
           return lobby.update({
@@ -169,22 +175,15 @@ router.post("/texts", (req, res, next) => {
       });
     })
     .then(() => {
+      // Update the stream with the new Lobby and Text data
       return Lobby.findByPk(lobbyId, { include: [Text] }).then(updated => {
-        console.log("Updated", updated);
         updateStream(updated);
       });
-
-      // return Lobby.findByPk(lobbyId, { include: [Text] }).then(updated => {
-      //   console.log("Updated", updated);
-      //   updateStream(updated);
-      // });
-
-      res.json(text);
     })
     .catch(next);
 });
 
-// Edit - Stop a Game
+// End-point to stop a game
 router.put("/lobbies/:id/quit", async (req, res, next) => {
   try {
     const lobby = await Lobby.findByPk(req.params.id);
@@ -194,7 +193,6 @@ router.put("/lobbies/:id/quit", async (req, res, next) => {
       const updated = await Lobby.findByPk(req.params.id, { include: [Text] });
 
       updateStream(updated);
-
       return res.status(200).send({ message: "Game Stopped" });
     }
 
@@ -204,7 +202,7 @@ router.put("/lobbies/:id/quit", async (req, res, next) => {
   }
 });
 
-// Delete Lobby
+// This end-point isn't used in the app
 router.delete("/lobbies/:id", (req, res, next) => {
   Lobby.destroy({
     where: {

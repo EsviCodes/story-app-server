@@ -27,15 +27,15 @@ router.post("/verbs/default", (req, res, next) => {
     { verb: "save" },
     { verb: "decorate" },
     { verb: "program" },
-    { verb: "travel" },
+    { verb: "discover" },
     { verb: "cuddle" },
     { verb: "create" },
     { verb: "seek" },
-    { verb: "live" },
+    { verb: "write about" },
     { verb: "dream about" }
   ])
     .then(() =>
-      res.status(201).send({ message: "Verbs Data created succesfully" })
+      res.status(201).send({ message: "Verb Data created succesfully" })
     )
     .catch(next);
 });
