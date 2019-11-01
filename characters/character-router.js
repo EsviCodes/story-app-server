@@ -26,15 +26,15 @@ router.get("/characters/:id", (req, res, next) => {
 // Post default data
 router.post("/characters/default", (req, res, next) => {
   Character.bulkCreate([
-    { character: "programmer" },
-    { character: "prince" },
-    { character: "princess" },
-    { character: "frog" },
-    { character: "cat" },
-    { character: "fluffy bunny" },
-    { character: "teacher" },
-    { character: "student" },
-    { character: "vegan sausage" },
+    { character: "smart programmer" },
+    { character: "cowardly hero" },
+    { character: "strong princess" },
+    { character: "magnificent dragon" },
+    { character: "fluffy cat" },
+    { character: "huge bunny" },
+    { character: "brave witch" },
+    { character: "greedy writer" },
+    { character: "hairy hobbit" },
     { character: "pink elephant" }
   ])
     .then(() =>
