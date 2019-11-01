@@ -45,10 +45,10 @@ function updateStream(entity) {
 // End-Points
 
 // Get all lobbies --stream
+// Filter to only get the lobbies where the status of the lobby is waiting || writing
 router.get("/lobbies", async (req, res) => {
   try {
     const lobbiesList = await Lobby.findAll({
-      // Filter to only get the lobbies where the status of the lobby is waiting || writing
       where: {
         [Op.or]: [{ status: "waiting" }, { status: "writing" }]
       }
