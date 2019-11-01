@@ -1,7 +1,7 @@
 # Story Writing Game
 
 ## Synopisis
-Have you always wanted to write a story together with your friends, or maybe with a random stranger? This is the app for you! Create a new writing room, think of a title for your story, write the first sentece, and once another writer joins you, you are good to go! It's that simple. Happy Writing!
+Have you always wanted to write a story together with your friends, or do you dare to collaborate with a random stranger? This is the app for you! Create or join a writing room, take turns in writing a new sentence, and say yes! Go with whatever the other writer puts into the story and work from there. It's that simple. Happy Writing!
 
 This app is a multiple player game to write a story together.
 

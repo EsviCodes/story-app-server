@@ -36,18 +36,23 @@ function updateStream(entity) {
 }
 
 // Get all Lobbies -- works
+// message that no error is caught
 router.get("/lobbies", async (req, res) => {
-  const lobbiesList = await Lobby.findAll({
-    where: {
-      [Op.or]: [{ status: "waiting" }, { status: "writing" }]
-    }
-  });
+  try {
+    const lobbiesList = await Lobby.findAll({
+      where: {
+        [Op.or]: [{ status: "waiting" }, { status: "writing" }]
+      }
+    });
 
-  // filter to only send back lobby where lobbies have players waiting
-  const data = JSON.stringify(lobbiesList);
+    // filter to only send back lobby where lobbies have players waiting
+    const data = JSON.stringify(lobbiesList);
 
-  stream.updateInit(data);
-  stream.init(req, res);
+    stream.updateInit(data);
+    stream.init(req, res);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 // Stream one specifc lobby
