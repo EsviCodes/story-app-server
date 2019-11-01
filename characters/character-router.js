@@ -3,7 +3,9 @@ const Character = require("./character-model");
 
 const router = new Router();
 
-// Get all Characters
+// End-points
+
+// Get all characters
 router.get("/characters", (req, res, next) => {
   Character.findAll()
     .then(characters => {
@@ -21,7 +23,7 @@ router.get("/characters/:id", (req, res, next) => {
     .catch(next);
 });
 
-// Post Default Data
+// Post default data
 router.post("/characters/default", (req, res, next) => {
   Character.bulkCreate([
     { character: "programmer" },
@@ -36,7 +38,7 @@ router.post("/characters/default", (req, res, next) => {
     { character: "pink elephant" }
   ])
     .then(() =>
-      res.status(201).send({ message: "Characters Data created succesfully" })
+      res.status(201).send({ message: "Character data created succesfully" })
     )
     .catch(next);
 });
