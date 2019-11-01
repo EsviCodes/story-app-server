@@ -1,4 +1,5 @@
-# Story Writing Game
+# Storylike - the best collaborative story writing app
+**The best stories are written together**
 
 ## Synopisis
 Have you always wanted to write a story together with your friends, or do you dare to collaborate with a random stranger? This is the app for you! Create or join a writing room, take turns in writing a new sentence, and say yes! Go with whatever the other writer puts into the story and work from there. It's that simple. Happy Writing!
@@ -6,40 +7,27 @@ Have you always wanted to write a story together with your friends, or do you da
 This app is a multiple player game to write a story together.
 
 ## Tips to write an amazing story
-1. Say yes!
-.. Saying yes is the most important rule of writing a story together. 
+How to start writing?
+1. Create a new story yourself or join another writer.
+1. If there are two writers in the same room. You can start your writing.
 
-### features
-- Write a story with
+How to write?
+1. The writer who initiated a story is the first one to write a new sentence. You may be as creative as you want, but you can only submit 255 characters per turn.
+1. When you submit your text, your turn is over and the other writer will add something to the story.
 
-- Supports multiple simultaneous games with a lobby system;
-X generate random story items
-X Start with a given first sentence
-X Choose from different themes / topics
-X If a player creates a new story, he/she can create story items him/herself and wait for another person who wants to write that story together
-- Use a dice to randomly select story outputs (like dungeon and dragons)
+2. Say yes! Go with whatever the other writer puts into the story and work from there.
+2. Examples:
+- Good
+.. player1: I'm so happy you gave me a bunny for my birthday. Thank you!
+.. player2: You're welcome! With your love for bunnies I thought that you'd like it.
 
+- Wrong
+.. player1: I'm so happy you gave me a bunny for my birthday. Thank you!
+.. player2: I didn't give you a bunny. I gave you a rat.
 
-1. What will the database schema be?
-- Lobby System
-.. id, name, player1, player2, status, story
-- Players
-.. username, password
-- Story
-.. title, description (based on beginning sentence)
-- Text
-.. sentence, player, story
+How to quit the story?
+1. Are you done writing your story? Don't forget to copy and save your text somewhere, because it isn't a build in feature (yet!)
+1. When the text is safe, quit the room and you'll be redirected to the writing rooms' page
 
-Once apon a time in _BLANK_ (place), a _BLANK_ (character) was born to _BLANK_ (verb) a _BLANK_ (noun).
-- place
-- character
-- verb 
-- noun 
-
-
-#### thoughts
-- We can write our own story API or look for an excisting story writing API
-
-- Take turn
-- - back-end ?
-- quit the turn
+### review
+"I never thought I was very creative, but I always wanted to be a novelist. Writing at the Awesome Story Creating App really helped me to come out of my shell. You never know where the story with another writer takes you, which is fun, a bit scary, but it helped me to become a better writer!" - LadyWriter1990
