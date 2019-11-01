@@ -7,8 +7,9 @@ const Sequelize = require("sequelize");
 
 const router = new Router();
 
+// When you create a new writing room in the app, you have to fill in the blanks in a given first sentence. If you choose to get random suggestions, this end-point is requested.
+
 router.get("/description/random", (req, res, next) => {
-  //console.log("Description is working"); // works
   Promise.all([
     Place.findOne({
       order: [Sequelize.fn("RANDOM")]
@@ -24,8 +25,6 @@ router.get("/description/random", (req, res, next) => {
     })
   ])
     .then(values => {
-      //console.log("values", values);
-
       const description = {
         place: values[0].place,
         character: values[1].character,

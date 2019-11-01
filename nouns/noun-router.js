@@ -29,14 +29,14 @@ router.post("/nouns/default", (req, res, next) => {
     { noun: "castle" },
     { noun: "kitten" },
     { noun: "computer program" },
-    { noun: "candy" },
+    { noun: "piece of candy" },
     { noun: "chickpea" },
     { noun: "heart" },
     { noun: "galaxy" },
     { noun: "koala" }
   ])
     .then(() =>
-      res.status(201).send({ message: "Nouns Data created succesfully" })
+      res.status(201).send({ message: "Noun Data created succesfully" })
     )
     .catch(next);
 });

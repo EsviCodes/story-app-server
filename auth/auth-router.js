@@ -5,7 +5,7 @@ const Player = require("../players/player-model");
 
 const router = new Router();
 
-// define endpoints here
+// Endpoints
 router.post("/login", (req, res) => {
   if (!req.body.username || !req.body.password) {
     return res
@@ -19,22 +19,20 @@ router.post("/login", (req, res) => {
     }
   })
     .then(player => {
-      // we can get null, it was not found
       if (!player) {
         res.status(400).send({
           message: "Username or password incorrect, sorry"
         });
       }
 
-      // 2. use bcrypt.compareSync to check the password against the stored hash
+      // Use bcrypt.compareSync to check the password against the stored hash
       else if (bcrypt.compareSync(req.body.password, player.password)) {
-        // 3. if the password is correct, return a JWT with the userId of the user (user.id)
+        // If the password is correct, return a JWT with the userId of the user (user.id)
         res.send({
           jwt: toJWT({ playerId: player.id }) // make a token, with userId encrypted inside of it
         });
       } else {
         res.status(400).send({
-          // message: "Password was incorrect" ... yeah, but let's not tell people ok?
           message: "Username or password incorrect, sorry"
         });
       }
@@ -46,8 +44,6 @@ router.post("/login", (req, res) => {
       });
     });
 });
-
-//router.use(journalRouter);
 
 router.get("/secret-endpoint", (req, res) => {
   const auth =
