@@ -31,9 +31,9 @@ router.post("/places/default", (req, res, next) => {
     { place: "the Rainbow" },
     { place: "a Volcano" },
     { place: "the Deep Sea" },
-    { place: "a House on the Prairie" },
+    { place: "a Little House" },
     { place: "Jane Austen's Home" },
-    { place: "an academy called Codaisseur" }
+    { place: "Codaisseur" }
   ])
     .then(() =>
       res.status(201).send({ message: "Place Data created succesfully" })
